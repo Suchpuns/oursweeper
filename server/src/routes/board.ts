@@ -42,6 +42,7 @@ router.get("/generate", (req: Request, res: Response) => {
       updateValues(board, x, y);
     }
   }
+  printBoard(board);
   return res.status(200).send(board);
 });
 
@@ -59,7 +60,8 @@ function updateValues(board: Cell[][], x: number, y: number): void {
         i >= 0 &&
         i < board.length &&
         j >= 0 &&
-        j < board[0].length
+        j < board[0].length &&
+        board[i][j].value != -1
       ) {
         board[i][j].value += 1;
       }
@@ -68,4 +70,14 @@ function updateValues(board: Cell[][], x: number, y: number): void {
   return;
 }
 
+function printBoard(board: Cell[][]): void {
+  let row: string = "";
+  for (let i = 0; i < board.length; i++) {
+    row = "";
+    for (let j = 0; j < board[0].length; j++) {
+      row += " \t" + board[i][j].value.toString();
+    }
+    console.log(row);
+  }
+}
 export { router as default };

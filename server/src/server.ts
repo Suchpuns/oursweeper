@@ -3,10 +3,20 @@ import { Cell } from "./interfaces";
 import boardRoutes from "./routes/board";
 import dotenv from "dotenv";
 import morgan from "morgan";
+import cors from "cors";
 require("source-map-support").install();
 dotenv.config();
 
 const app: Express = express();
+
+app.use(express.json());
+
+app.use(
+  cors({
+    origin: process.env.FE_URL,
+    credentials: true,
+  })
+);
 
 const port = process.env.PORT;
 
