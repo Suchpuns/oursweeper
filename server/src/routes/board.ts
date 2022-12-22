@@ -14,9 +14,9 @@ const router = express.Router();
  */
 router.get("/generate", (req: Request, res: Response) => {
   const boardSizes = [
-    { x: 8, y: 10, bombNum: 10 },
-    { x: 14, y: 40, bombNum: 40 },
-    { x: 20, y: 99, bombNum: 99 },
+    { x: 8, y: 10, mineNum: 10 },
+    { x: 14, y: 40, mineNum: 40 },
+    { x: 20, y: 99, mineNum: 99 },
   ];
   if (req.query.difficulty === undefined) {
     return res.status(400).send({ error: "Missing difficulty in query." });
@@ -30,15 +30,15 @@ router.get("/generate", (req: Request, res: Response) => {
       board[i][j] = { hidden: true, value: 0 };
     }
   }
-  // Add bombs
-  let bombNum = 0;
-  while (bombNum < boardSize.bombNum) {
+  // Add mines
+  let mineNum = 0;
+  while (mineNum < boardSize.mineNum) {
     let x = Math.round(Math.random() * 1000) % boardSize.x;
     let y = Math.round(Math.random() * 1000) % boardSize.y;
     if (board[x][y].value != -1) {
       board[x][y].value = -1;
-      bombNum++;
-      // Correct the values adjacent to the bomb
+      mineNum++;
+      // Correct the values adjacent to the mine
       updateValues(board, x, y);
     }
   }
@@ -47,10 +47,10 @@ router.get("/generate", (req: Request, res: Response) => {
 });
 
 /**
- * Updates the cell values next to a bomb
+ * Updates the cell values next to a mine
  * @param board The 2D array of the board
- * @param x     x position of the bomb
- * @param y     y position of the bomb
+ * @param x     x position of the mine
+ * @param y     y position of the mine
  */
 function updateValues(board: Cell[][], x: number, y: number): void {
   for (let i = x - 1; i <= x + 1; i++) {
