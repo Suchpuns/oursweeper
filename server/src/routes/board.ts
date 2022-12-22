@@ -19,7 +19,7 @@ router.get("/generate", (req: Request, res: Response) => {
     { x: 20, y: 99, bombNum: 99 },
   ];
   if (req.query.difficulty === undefined) {
-    return res.status(400).send({ error: "Missing difficulty in query" });
+    return res.status(400).send({ error: "Missing difficulty in query." });
   }
   // Create board
   const boardSize = boardSizes[parseInt(req.query.difficulty as string)];
@@ -55,14 +55,7 @@ router.get("/generate", (req: Request, res: Response) => {
 function updateValues(board: Cell[][], x: number, y: number): void {
   for (let i = x - 1; i <= x + 1; i++) {
     for (let j = y - 1; j <= y + 1; j++) {
-      if (
-        i != j &&
-        i >= 0 &&
-        i < board.length &&
-        j >= 0 &&
-        j < board[0].length &&
-        board[i][j].value != -1
-      ) {
+      if (i != j && i >= 0 && i < board.length && j >= 0 && j < board[0].length && board[i][j].value != -1) {
         board[i][j].value += 1;
       }
     }
@@ -77,7 +70,6 @@ function printBoard(board: Cell[][]): void {
     for (let j = 0; j < board[0].length; j++) {
       row += " \t" + board[i][j].value.toString();
     }
-    console.log(row);
   }
 }
 export { router as default };
