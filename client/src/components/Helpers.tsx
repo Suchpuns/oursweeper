@@ -8,8 +8,8 @@ export type BoardAttributes = {
 };
 
 export enum CellState {
-  FLAGGED = "🚩",
-  MINE = "💣",
-  HIDDEN = "",
-  REVEALED = "REVEALED",
+  FLAGGED = '🚩',
+  MINE = '💣',
+  HIDDEN = '',
+  REVEALED = 'REVEALED',
 }

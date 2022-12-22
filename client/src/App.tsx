@@ -1,7 +1,7 @@
-import Cell from "./Cell";
-import Board from "./Board";
-import { Fragment } from "react";
-import "./App.css";
+import Cell from './components/Cell';
+import Board from './components/Board';
+import { Fragment } from 'react';
+import './App.css';
 
 function App() {
   return (
