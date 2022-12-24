@@ -70,6 +70,7 @@ function printBoard(board: Cell[][]): void {
     for (let j = 0; j < board[0].length; j++) {
       row += " \t" + board[i][j].value.toString();
     }
+    console.log(row);
   }
 }
 export { router as default };
