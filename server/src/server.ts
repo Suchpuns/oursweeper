@@ -1,11 +1,13 @@
 import express, { Express, Request, Response } from "express";
-import { Cell } from "./interfaces";
+import { ISocket } from "./interfaces";
 import boardRoutes from "./routes/board";
 import dotenv from "dotenv";
 import morgan from "morgan";
 import cors from "cors";
 import { Server } from "socket.io";
 import http from "http";
+import { DefaultEventsMap } from "socket.io/dist/typed-events";
+import registerRoomHandlers from "./sockets/roomHandler";
 
 require("source-map-support").install();
 dotenv.config();
@@ -31,6 +33,14 @@ app.use(
   })
 );
 app.use(morgan("tiny"));
+io.use((socket: ISocket, next) => {
+  const username: string = socket.handshake.auth.username;
+  if (!username) {
+    return next(new Error("no username"));
+  }
+  socket.username = username;
+  next();
+})
 
 /*
 ////////////////////
@@ -49,9 +59,12 @@ app.use("/board", boardRoutes);
       WEBSOCKETS
 ////////////////////
 */
-io.on('connection', (socket) => {
-  console.log('a user connected');
-});
+const onConnection = (socket: ISocket) => {
+  registerRoomHandlers(io, socket);
+}
+
+io.on("connection", onConnection);
+
 
 server.listen(port, () => {
   console.log(`⚡️[server]: Server is running at https://localhost:${port}`);
