@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { TextField, Button } from '@mui/material';
+import React, { useEffect, useState, createContext } from 'react';
+import { TextField, Button, imageListItemBarClasses } from '@mui/material';
 import './css/Rooms.css';
 import Board from './Board';
 import io from 'socket.io-client';
@@ -12,7 +12,11 @@ const Rooms = () => {
   const [roomName, setRoomName] = useState<string>('');
   const [username, setUsername] = useState<string>('');
   const [startGame, setStartGame] = useState<boolean>(false);
-  const [board, setBoard] = useState<CellAttributes[][]>([]);
+  const [firstMove, setFirstMove] = useState<boolean>(true);
+  const [board, setBoard] = useState<CellAttributes[][]>([
+    [{ hidden: true, value: -1 }],
+  ]);
+
   useEffect(() => {
     socket.on('connect', () => {
       console.log('hi');
@@ -24,29 +28,69 @@ const Rooms = () => {
       setIsConnected(false);
     });
 
-    socket.on('error', (message) => {
+    socket.on('error', (message: string) => {
       socket.disconnect();
       console.log('ERROR: ' + message);
+    });
+
+    socket.on('boards', (boards) => {
+      boards = JSON.parse(boards);
+      setBoard(boards[username]);
+    });
+
+    socket.on('game', (condition) => {
+      console.log('game', condition);
+      if (condition === 'lost') {
+        console.log('GAME LOST');
+        return;
+      }
+      if (condition === 'win') {
+        console.log('GAME WON');
+        socket.disconnect();
+        return;
+      }
+      return;
     });
 
     return () => {
       socket.off('connect');
       socket.off('disconnect');
+      socket.off('error');
+      socket.off('boards');
+      socket.off('game');
     };
-  }, []);
+  }, [roomName, username, board]);
 
-  const addRoom = async () => {
+  const addRoom = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    setFirstMove(true);
     socket.auth = { username: username };
     socket.connect();
     socket.emit('room:create', roomName);
     return;
   };
 
-  const joinRoom = () => {
+  const joinRoom = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setFirstMove(true);
     socket.auth = { username: username };
     socket.connect();
     socket.emit('room:join', roomName);
     return;
+  };
+
+  const revealTile = (x: number, y: number) => {
+    console.log('revealing tile', x, y);
+    socket.emit(
+      'game:revealTile',
+      x.toString(),
+      y.toString(),
+      roomName,
+      firstMove
+    );
+    if (firstMove === true) {
+      setFirstMove(false);
+    }
   };
 
   const handleRoomNameField = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -105,7 +149,7 @@ const Rooms = () => {
           )}
         </>
       ) : (
-        <Board difficulty={0} board={board} />
+        <Board difficulty={0} board={board} revealTile={revealTile} />
       )}
     </div>
   );

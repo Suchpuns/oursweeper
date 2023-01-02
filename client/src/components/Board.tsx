@@ -1,8 +1,9 @@
 import { BoardAttributes, CellAttributes } from './Helpers';
 import BoardRow from './BoardRow';
+import { useEffect } from 'react';
 
-const Board = ({ difficulty, board }: BoardAttributes) => {
-  let size = difficulty === 0 ? 8 : difficulty === 1 ? 14 : 20;
+const Board = ({ difficulty, board, revealTile }: BoardAttributes) => {
+  // let size = difficulty === 0 ? 8 : difficulty === 1 ? 14 : 20;
   // let board: CellAttributes[][] = new Array(size)
   //   .fill({ hidden: true, value: 0 })
   //   .map(() => new Array(size).fill({ hidden: true, value: 0 }));
@@ -20,10 +21,12 @@ const Board = ({ difficulty, board }: BoardAttributes) => {
   //   return board;
   // };
 
+
+  
   return (
     <>
-      {board.map((row: CellAttributes[], idx) => {
-        return <BoardRow key={idx} row={row} />;
+      {board.map((row: CellAttributes[], idx: number) => {
+        return <BoardRow x={idx} row={row} revealTile={revealTile} />;
       })}
     </>
   );

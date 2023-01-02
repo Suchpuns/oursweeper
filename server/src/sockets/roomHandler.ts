@@ -16,10 +16,15 @@ const registerRoomHandlers = (io: Server<DefaultEventsMap, DefaultEventsMap, Def
       socket.emit("error", "Socket does not have username");
       return;
     }
+    if (rooms[roomName] !== undefined) {
+      console.log("room already exists!");
+      socket.emit("error", "room already exists");
+    }
     socket.join(roomName);
     rooms[roomName] = {};
     rooms[roomName][socket.username] = createBoard(1);
     console.log("creating room")
+    socket.emit("boards", JSON.stringify(rooms[roomName]));
   }
 
   const joinRoom = (roomName: string) => {
@@ -40,6 +45,8 @@ const registerRoomHandlers = (io: Server<DefaultEventsMap, DefaultEventsMap, Def
     }
     console.log("joining room")
     rooms[roomName][socket.username] = createBoard(1);
+    socket.join(roomName);
+    socket.emit("boards", JSON.stringify(rooms[roomName]));
   }
 
   socket.on("room:create", createRoom);

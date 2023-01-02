@@ -3,10 +3,18 @@ import { Stack } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import React from 'react';
 
-const Cell = ({ hidden, value }: CellAttributes) => {
+type Props = {
+  x: number;
+  y: number;
+  hidden: boolean;
+  value: number;
+  revealTile: (x: number, y: number) => void;
+};
+
+const Cell = ({ x, y, hidden, value, revealTile }: Props) => {
   const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
     ...theme.typography.body2,
@@ -22,10 +30,19 @@ const Cell = ({ hidden, value }: CellAttributes) => {
   const [cell, setCell] = useState<CellState | number>(CellState.HIDDEN);
   const [isHidden, setIsHidden] = useState<boolean>(hidden);
 
+  useEffect(() => {
+    if (hidden === false) {
+      if (value === -1) {
+        setCell(CellState.MINE);
+      } else {
+        setCell(value);
+      }
+    }
+  }, [hidden]);
+
   const handleLeftClick = () => {
     if (cell !== CellState.FLAGGED) {
-      value === -1 ? setCell(CellState.MINE) : setCell(value);
-      setIsHidden(!isHidden);
+      revealTile(x, y);
     }
   };
 
@@ -34,7 +51,7 @@ const Cell = ({ hidden, value }: CellAttributes) => {
     if (cell === CellState.FLAGGED) {
       setCell(CellState.HIDDEN);
       setIsHidden(!isHidden);
-    } else if (isHidden) setCell(CellState.FLAGGED);
+    } else if (hidden) setCell(CellState.FLAGGED);
   };
 
   return (

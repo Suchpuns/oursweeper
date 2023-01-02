@@ -8,6 +8,7 @@ import { Server } from "socket.io";
 import http from "http";
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
 import registerRoomHandlers from "./sockets/roomHandler";
+import registerGameHandlers from "./sockets/gameHandler";
 
 require("source-map-support").install();
 dotenv.config();
@@ -61,6 +62,7 @@ app.use("/board", boardRoutes);
 */
 const onConnection = (socket: ISocket) => {
   registerRoomHandlers(io, socket);
+  registerGameHandlers(io, socket);
 }
 
 io.on("connection", onConnection);
