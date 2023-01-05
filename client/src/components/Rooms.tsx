@@ -4,18 +4,17 @@ import './css/Rooms.css';
 import Board from './Board';
 import io from 'socket.io-client';
 import { BoardAttributes, CellAttributes } from './Helpers';
+import { boardState, roomInfoState, RoomInfo } from '../recoil_state';
+import { useRecoilState } from 'recoil';
 
 const socket = io(import.meta.env.VITE_BE_URL, { autoConnect: false });
 
 const Rooms = () => {
   const [isConnected, setIsConnected] = useState<boolean>(socket.connected);
-  const [roomName, setRoomName] = useState<string>('');
-  const [username, setUsername] = useState<string>('');
+  const [roomInfo, setRoomInfo] = useRecoilState(roomInfoState);
   const [startGame, setStartGame] = useState<boolean>(false);
   const [firstMove, setFirstMove] = useState<boolean>(true);
-  const [board, setBoard] = useState<CellAttributes[][]>([
-    [{ hidden: true, value: -1 }],
-  ]);
+  const [board, setBoard] = useRecoilState(boardState);
 
   useEffect(() => {
     socket.on('connect', () => {
@@ -35,7 +34,7 @@ const Rooms = () => {
 
     socket.on('boards', (boards) => {
       boards = JSON.parse(boards);
-      setBoard(boards[username]);
+      setBoard(boards[roomInfo.username]);
     });
 
     socket.on('game', (condition) => {
@@ -59,23 +58,23 @@ const Rooms = () => {
       socket.off('boards');
       socket.off('game');
     };
-  }, [roomName, username, board]);
+  }, [roomInfo.roomName, roomInfo.username, board]);
 
   const addRoom = async (e: React.MouseEvent) => {
     e.preventDefault();
     setFirstMove(true);
-    socket.auth = { username: username };
+    socket.auth = { username: roomInfo.username };
     socket.connect();
-    socket.emit('room:create', roomName);
+    socket.emit('room:create', roomInfo.roomName);
     return;
   };
 
   const joinRoom = (e: React.MouseEvent) => {
     e.preventDefault();
     setFirstMove(true);
-    socket.auth = { username: username };
+    socket.auth = { username: roomInfo.username };
     socket.connect();
-    socket.emit('room:join', roomName);
+    socket.emit('room:join', roomInfo.roomName);
     return;
   };
 
@@ -85,7 +84,7 @@ const Rooms = () => {
       'game:revealTile',
       x.toString(),
       y.toString(),
-      roomName,
+      roomInfo.roomName,
       firstMove
     );
     if (firstMove === true) {
@@ -94,11 +93,11 @@ const Rooms = () => {
   };
 
   const handleRoomNameField = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRoomName(event.target.value);
+    setRoomInfo({ ...roomInfo, roomName: event.target.value });
   };
 
   const handleUsernameField = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setUsername(event.target.value);
+    setRoomInfo({ ...roomInfo, username: event.target.value });
   };
 
   return (
@@ -109,16 +108,16 @@ const Rooms = () => {
           <p>Connected: {'' + isConnected}</p>
           <TextField
             label={'Room name'}
-            value={roomName}
+            value={roomInfo.roomName}
             onChange={handleRoomNameField}
           />
           <TextField
             label={'Username'}
-            value={username}
+            value={roomInfo.username}
             onChange={handleUsernameField}
             sx={{ marginLeft: '1rem' }}
           />
-          {roomName !== '' && username !== '' ? (
+          {roomInfo.roomName !== '' && roomInfo.username !== '' ? (
             <>
               {' '}
               <Button
@@ -149,7 +148,7 @@ const Rooms = () => {
           )}
         </>
       ) : (
-        <Board difficulty={0} board={board} revealTile={revealTile} />
+        <Board difficulty={0} revealTile={revealTile} />
       )}
     </div>
   );

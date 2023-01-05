@@ -13,6 +13,7 @@ const BoardRow = ({ x, row, revealTile }: Props) => {
       {row.map((cell: CellAttributes, idx: number) => {
         return (
           <Cell
+            key={idx}
             x={x}
             y={idx}
             hidden={cell.hidden}
