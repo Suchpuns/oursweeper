@@ -7,7 +7,6 @@ export type CellAttributes = {
 
 export type BoardAttributes = {
   difficulty: number;
-  board: CellAttributes[][];
   revealTile: (x: number, y: number) => void;
 };
 
