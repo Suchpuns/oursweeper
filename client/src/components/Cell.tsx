@@ -4,6 +4,8 @@ import { styled } from '@mui/material/styles';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import { useState, useEffect } from 'react';
+import { boardState, clearFlagsState } from '../recoil_state';
+import { useRecoilValue, useRecoilState } from 'recoil';
 import React from 'react';
 
 type Props = {
@@ -15,6 +17,8 @@ type Props = {
 };
 
 const Cell = ({ x, y, hidden, value, revealTile }: Props) => {
+  let board = useRecoilValue(boardState);
+  const [clearFlags, setClearFlags] = useRecoilState(clearFlagsState);
   const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
     ...theme.typography.body2,
@@ -37,8 +41,16 @@ const Cell = ({ x, y, hidden, value, revealTile }: Props) => {
       } else {
         setCell(value);
       }
+    } else if (cell !== CellState.FLAGGED) {
+      setCell(CellState.HIDDEN);
     }
-  }, [hidden]);
+  }, [board]);
+
+  useEffect(() => {
+    if (hidden === true && cell === CellState.FLAGGED) {
+      setCell(CellState.HIDDEN);
+    }
+  }, [clearFlags]);
 
   const handleLeftClick = () => {
     if (cell !== CellState.FLAGGED) {

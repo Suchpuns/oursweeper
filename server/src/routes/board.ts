@@ -127,7 +127,6 @@ export function unCoverTile(board: Cell[][], x: number, y: number): Cell[][] {
   if (isValidCoords(board, x, y) === false) {
     return board;
   }
-  console.log(x, y);
   board[x][y].hidden = false;
   if (board[x][y].value === 0) {
     for (let i = x - 1; i <= x + 1; i++) {

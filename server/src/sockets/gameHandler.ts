@@ -10,6 +10,7 @@ import { isValidCoords, isWin, unCoverTile, unCoverFirstTile, createBoard } from
 const registerGameHandlers = (io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>, socket: ISocket) => {
   const revealTile = (x: string | number, y: string | number, roomName: string, first: boolean = true) => {
     console.log('revealing tile');
+    console.log(`is first: ${first}`);
     x = parseInt(x as string);
     y = parseInt(y as string)
     if (socket.username === undefined) {
@@ -27,12 +28,15 @@ const registerGameHandlers = (io: Server<DefaultEventsMap, DefaultEventsMap, Def
       socket.emit("error", "invalid coordinates");
       return;
     }
+    if (first) {
+      console.log("unconvering first tile");
+      rooms[roomName][socket.username] = unCoverFirstTile(rooms[roomName][socket.username], x, y);
+    }
     if (rooms[roomName][socket.username][x][y].value === -1) {
       socket.emit("game", "bomb");
       rooms[roomName][socket.username] = createBoard(1);
-    }
-    if (first) {
-      rooms[roomName][socket.username] = unCoverFirstTile(rooms[roomName][socket.username], x, y);
+      socket.emit("boards", JSON.stringify(rooms[roomName]));
+      return;
     }
     rooms[roomName][socket.username] = unCoverTile(rooms[roomName][socket.username], x, y);
     socket.emit("boards", JSON.stringify(rooms[roomName]));
