@@ -29,6 +29,10 @@ const Rooms = () => {
       setIsConnected(true);
     });
 
+    socket.on('game-reconnect', () => {
+      setFirstMove(false);
+    });
+
     socket.on('disconnect', () => {
       console.log('bye :(');
       setIsConnected(false);
