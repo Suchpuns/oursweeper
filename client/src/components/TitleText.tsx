@@ -16,8 +16,10 @@ const TitleText = () => {
     minesArray.push(mines[index]);
   }
   minesArray[4] = '🚩';
+  minesArray[5] = '💣';
   minesArray[1] = '🚩';
   minesArray[9] = '🚩';
+  minesArray[7] = '💣';
   return (
     <div>
       <meta charSet="UTF-8"></meta>
