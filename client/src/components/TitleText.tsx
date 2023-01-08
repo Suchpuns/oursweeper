@@ -25,13 +25,21 @@ const TitleText = () => {
       <meta charSet="UTF-8"></meta>
       <div className="title">
         <p className="word">
-          {titleArray.map((letter) => {
-            return <span className="letter">{letter}</span>;
+          {titleArray.map((letter, idx) => {
+            return (
+              <span className="letter" key={idx}>
+                {letter}
+              </span>
+            );
           })}
         </p>
         <p className="mines">
-          {minesArray.map((mine) => {
-            return <span className="mine">{mine}</span>;
+          {minesArray.map((mine, idx) => {
+            return (
+              <span className="mine" key={idx}>
+                {mine}
+              </span>
+            );
           })}
         </p>
         <a className="start-btn" href="/game">
