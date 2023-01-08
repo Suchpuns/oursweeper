@@ -5,7 +5,12 @@ import Board from './Board';
 import TitleText from './TitleText';
 import io from 'socket.io-client';
 import { BoardAttributes, CellAttributes } from './Helpers';
-import { boardState, roomInfoState, RoomInfo } from '../recoil_state';
+import {
+  boardState,
+  roomInfoState,
+  RoomInfo,
+  clearFlagsState,
+} from '../recoil_state';
 import { useRecoilState } from 'recoil';
 
 const socket = io(import.meta.env.VITE_BE_URL, { autoConnect: false });
@@ -15,6 +20,7 @@ const Rooms = () => {
   const [roomInfo, setRoomInfo] = useRecoilState(roomInfoState);
   const [startGame, setStartGame] = useState<boolean>(false);
   const [firstMove, setFirstMove] = useState<boolean>(true);
+  const [clearFlags, setClearFlags] = useRecoilState(clearFlagsState);
   const [board, setBoard] = useRecoilState(boardState);
 
   useEffect(() => {
@@ -35,6 +41,7 @@ const Rooms = () => {
 
     socket.on('boards', (boards) => {
       boards = JSON.parse(boards);
+      console.log(boards[roomInfo.username]);
       setBoard(boards[roomInfo.username]);
     });
 
@@ -43,6 +50,10 @@ const Rooms = () => {
       if (condition === 'lost') {
         console.log('GAME LOST');
         return;
+      }
+      if (condition === 'bomb') {
+        setFirstMove(true);
+        setClearFlags((clearFlags + 1) % 2);
       }
       if (condition === 'win') {
         console.log('GAME WON');
