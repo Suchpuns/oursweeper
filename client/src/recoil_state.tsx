@@ -5,6 +5,11 @@ const boardState = atom({
   default: [[{ hidden: true, value: -1 }]],
 });
 
+const clearFlagsState = atom({
+  key: 'clearFlagsState',
+  default: 0,
+});
+
 export type RoomInfo = {
   roomName: string;
   username: string;
@@ -20,4 +25,4 @@ const roomInfoState = atom({
   default: defaultRoomInfo,
 });
 
-export { boardState, roomInfoState };
+export { boardState, roomInfoState, clearFlagsState };
