@@ -2,6 +2,7 @@ import React, { useEffect, useState, createContext } from 'react';
 import { TextField, Button, imageListItemBarClasses } from '@mui/material';
 import './css/Rooms.css';
 import Board from './Board';
+import GameVersus from './GameVersus';
 import TitleText from './TitleText';
 import io from 'socket.io-client';
 import { BoardAttributes, CellAttributes } from './Helpers';
@@ -22,6 +23,7 @@ const Rooms = () => {
   const [firstMove, setFirstMove] = useState<boolean>(true);
   const [clearFlags, setClearFlags] = useRecoilState(clearFlagsState);
   const [board, setBoard] = useRecoilState(boardState);
+  const [boards, setBoards] = useState<Record<string, CellAttributes[][]>>({});
 
   useEffect(() => {
     socket.on('connect', () => {
@@ -43,10 +45,14 @@ const Rooms = () => {
       console.log('ERROR: ' + message);
     });
 
-    socket.on('boards', (boards) => {
+    socket.on('boards', (boards, sender) => {
       boards = JSON.parse(boards);
       console.log(boards[roomInfo.username]);
-      setBoard(boards[roomInfo.username]);
+      console.log(sender);
+      if (sender === roomInfo.username) {
+        setBoard(boards[roomInfo.username]);
+      }
+      setBoards(boards);
     });
 
     socket.on('game', (condition) => {
@@ -164,7 +170,7 @@ const Rooms = () => {
           )}
         </>
       ) : (
-        <Board difficulty={0} revealTile={revealTile} />
+        <GameVersus difficulty={0} revealTile={revealTile} boards={boards} />
       )}
     </div>
   );

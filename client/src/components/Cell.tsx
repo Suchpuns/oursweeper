@@ -14,10 +14,10 @@ type Props = {
   hidden: boolean;
   value: number;
   revealTile: (x: number, y: number) => void;
+  viewOnly: boolean;
 };
 
-const Cell = ({ x, y, hidden, value, revealTile }: Props) => {
-  let board = useRecoilValue(boardState);
+const Cell = ({ x, y, hidden, value, revealTile, viewOnly }: Props) => {
   const [clearFlags, setClearFlags] = useRecoilState(clearFlagsState);
   const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -25,10 +25,10 @@ const Cell = ({ x, y, hidden, value, revealTile }: Props) => {
     padding: theme.spacing(1),
     textAlign: 'center',
     color: theme.palette.text.secondary,
-    height: '2rem',
-    width: '2rem',
+    height: viewOnly === false ? '1.8rem' : '1rem',
+    width: viewOnly === false ? '1.8rem' : '1rem',
     borderRadius: '0',
-    fontSize: '1.3rem',
+    fontSize: viewOnly === false ? '1.3rem' : '0.8rem',
   }));
 
   const [cell, setCell] = useState<CellState | number>(CellState.HIDDEN);
@@ -44,7 +44,7 @@ const Cell = ({ x, y, hidden, value, revealTile }: Props) => {
     } else if (cell !== CellState.FLAGGED) {
       setCell(CellState.HIDDEN);
     }
-  }, [board]);
+  }, [value, hidden]);
 
   useEffect(() => {
     if (hidden === true && cell === CellState.FLAGGED) {
@@ -54,6 +54,13 @@ const Cell = ({ x, y, hidden, value, revealTile }: Props) => {
 
   const handleLeftClick = () => {
     if (cell !== CellState.FLAGGED) {
+      // Update the cell
+      hidden = false;
+      if (value === -1) {
+        setCell(CellState.MINE);
+      } else {
+        setCell(value);
+      }
       revealTile(x, y);
     }
   };
@@ -66,23 +73,40 @@ const Cell = ({ x, y, hidden, value, revealTile }: Props) => {
     } else if (hidden) setCell(CellState.FLAGGED);
   };
 
-  return (
-    <Button
-      variant="text"
-      onClick={handleLeftClick}
-      onContextMenu={(e) => {
-        handleRightClick(e);
-      }}
-      sx={{
-        padding: '0',
-        minWidth: '0',
-        border: '1px black solid',
-        borderRadius: 0,
-      }}
-    >
-      <Item>{cell}</Item>
-    </Button>
-  );
+  if (viewOnly === false) {
+    return (
+      <Button
+        variant="text"
+        onClick={handleLeftClick}
+        onContextMenu={(e) => {
+          handleRightClick(e);
+        }}
+        sx={{
+          padding: '0',
+          minWidth: '0',
+          border: '1px black solid',
+          borderRadius: 0,
+        }}
+      >
+        <Item>{cell}</Item>
+      </Button>
+    );
+  } else {
+    return (
+      <Button
+        variant="text"
+        disabled
+        sx={{
+          padding: '0',
+          minWidth: '0',
+          border: '1px black solid',
+          borderRadius: 0,
+        }}
+      >
+        <Item>{cell}</Item>
+      </Button>
+    );
+  }
 };
 
 export default Cell;

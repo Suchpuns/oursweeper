@@ -35,11 +35,11 @@ const registerGameHandlers = (io: Server<DefaultEventsMap, DefaultEventsMap, Def
     if (rooms[roomName][socket.username][x][y].value === -1) {
       socket.emit("game", "bomb");
       rooms[roomName][socket.username] = createBoard(1);
-      socket.emit("boards", JSON.stringify(rooms[roomName]));
+      io.to(roomName).emit("boards", JSON.stringify(rooms[roomName]), socket.username);
       return;
     }
     rooms[roomName][socket.username] = unCoverTile(rooms[roomName][socket.username], x, y);
-    socket.emit("boards", JSON.stringify(rooms[roomName]));
+    io.to(roomName).emit("boards", JSON.stringify(rooms[roomName]), socket.username);
     if (isWin(rooms[roomName][socket.username]) === true) {
       console.log(`${socket.username} has won!`);
       socket.emit("game", "win");
@@ -56,7 +56,7 @@ const registerGameHandlers = (io: Server<DefaultEventsMap, DefaultEventsMap, Def
       return;
     }
     console.log(rooms[roomName]);
-    socket.to(roomName).emit("boards", rooms[roomName]);
+    io.to(roomName).emit("boards", rooms[roomName], socket.username);
   }
 
   socket.on("game:revealTile", revealTile);

@@ -5,9 +5,10 @@ type Props = {
   x: number;
   row: CellAttributes[];
   revealTile: (x: number, y: number) => void;
+  viewOnly: boolean;
 };
 
-const BoardRow = ({ x, row, revealTile }: Props) => {
+const BoardRow = ({ x, row, revealTile, viewOnly }: Props) => {
   return (
     <div style={{ display: 'flex' }}>
       {row.map((cell: CellAttributes, idx: number) => {
@@ -19,6 +20,7 @@ const BoardRow = ({ x, row, revealTile }: Props) => {
             hidden={cell.hidden}
             value={cell.value}
             revealTile={revealTile}
+            viewOnly={viewOnly}
           />
         );
       })}

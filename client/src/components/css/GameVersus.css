@@ -1,0 +1,30 @@
+body {
+  background-color: white;
+  color: black;
+}
+
+.boards {
+  display: flex;
+  gap: 10rem;
+  justify-content: center;
+  margin-right: -12rem;
+  margin-left: -12rem;
+}
+
+.mainBoard {
+  margin: auto;
+}
+
+.otherBoards {
+  height: 50rem;
+  display: flex;
+  overflow-y: scroll;
+  flex-direction: column;
+  gap: 2rem;
+  border: solid;
+  background: rgb(209, 130, 32);
+}
+
+.otherBoard {
+  margin: 1rem;
+}
