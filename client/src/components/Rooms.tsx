@@ -2,6 +2,7 @@ import React, { useEffect, useState, createContext } from 'react';
 import { TextField, Button, imageListItemBarClasses } from '@mui/material';
 import './css/Rooms.css';
 import Board from './Board';
+import TitleText from './TitleText';
 import io from 'socket.io-client';
 import { BoardAttributes, CellAttributes } from './Helpers';
 import {

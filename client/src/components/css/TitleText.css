@@ -1,0 +1,197 @@
+.word {
+  color: black;
+  font-size: 8vw;
+  position: absolute;
+  margin-top: 5vh;
+}
+
+/* CSS */
+.start-btn {
+  align-items: center;
+  background-clip: padding-box;
+  background-color: #fa6400;
+  border: 1px solid transparent;
+  border-radius: 0.25rem;
+  box-shadow: rgba(0, 0, 0, 0.02) 0 1px 3px 0;
+  box-sizing: border-box;
+  color: #fff;
+  cursor: pointer;
+  display: inline-flex;
+  font-family: system-ui, -apple-system, system-ui, 'Helvetica Neue', Helvetica,
+    Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  justify-content: center;
+  line-height: 1.25;
+  margin: 0;
+  min-height: 3rem;
+  padding: calc(0.875rem - 1px) calc(1.5rem - 1px);
+  position: relative;
+  text-decoration: none;
+  transition: all 250ms;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  vertical-align: baseline;
+  margin: auto;
+  opacity: 0%;
+}
+
+.start-btn:hover,
+.start-btn:focus {
+  background-color: #fb8332;
+  box-shadow: rgba(0, 0, 0, 0.1) 0 4px 12px;
+}
+
+.start-btn:hover {
+  color: white;
+  transform: translateY(-1px);
+}
+
+.start-btn:active {
+  background-color: #c85000;
+  box-shadow: rgba(0, 0, 0, 0.06) 0 2px 4px;
+  transform: translateY(0);
+}
+
+.title:hover > .start-btn {
+  opacity: 100%;
+}
+
+.mines {
+  position: absolute;
+  font-size: 3vw;
+  margin-top: 5vh;
+}
+
+.title {
+  width: 50vw;
+  height: 15vh;
+  display: flex;
+  justify-content: center;
+}
+
+.title:hover {
+  cursor: default;
+}
+
+.word > .letter {
+  display: inline-block;
+}
+
+.word > .letter {
+  transition: transform 350ms ease;
+}
+
+.fancy:hover > .letter {
+  transition-duration: 800ms;
+}
+
+.mines {
+  display: flex;
+  gap: 2.5vw;
+}
+
+.mines > .mine {
+  opacity: 0%;
+  transition: transform 350ms ease, opacity 350ms ease;
+}
+
+.mines > .mine {
+  display: inline-block;
+}
+
+.title:hover > .mines > .mine {
+  opacity: 100%;
+}
+/* MINES */
+.title:hover > .mines > .mine:nth-child(1) {
+  opacity: 100%;
+  transform: translate(-100%, 400%) rotate(-40deg);
+}
+
+.title:hover > .mines > .mine:nth-child(2) {
+  opacity: 100%;
+  transform: translate(-100%, -400%) rotate(-8deg);
+}
+
+.title:hover > .mines > .mine:nth-child(3) {
+  opacity: 100%;
+  transform: translate(-100%, 600%) rotate(-8deg);
+}
+
+.title:hover > .mines > .mine:nth-child(4) {
+  opacity: 100%;
+  transform: translate(-80%, -600%) rotate(-8deg);
+}
+
+.title:hover > .mines > .mine:nth-child(5) {
+  opacity: 100%;
+  transform: translate(-100%, 400%) rotate(8deg);
+}
+
+.title:hover > .mines > .mine:nth-child(6) {
+  opacity: 100%;
+  transform: translate(-100%, -400%) rotate(8deg);
+}
+
+.title:hover > .mines > .mine:nth-child(7) {
+  opacity: 100%;
+  transform: translate(100%, -400%) rotate(-8deg);
+}
+
+.title:hover > .mines > .mine:nth-child(8) {
+  opacity: 100%;
+  transform: translate(-100%, 400%) rotate(8deg);
+}
+
+.title:hover > .mines > .mine:nth-child(9) {
+  opacity: 100%;
+  transform: translate(0%, 400%) rotate(8deg);
+}
+
+.title:hover > .mines > .mine:nth-child(10) {
+  opacity: 100%;
+  transform: translate(100%, 400%) rotate(8deg);
+}
+
+/* TEXT */
+.title:hover > .word > .letter:nth-child(1) {
+  transform: translate(-100%, -60%) rotate(-8deg);
+}
+
+.title:hover > .word > .letter:nth-child(2) {
+  transform: translate(-50%, 100%) rotate(-8deg);
+}
+
+.title:hover > .word > .letter:nth-child(3) {
+  transform: translate(-40%, -130%) rotate(-8deg);
+}
+
+.title:hover > .word > .letter:nth-child(4) {
+  transform: translate(-20%, -200%) rotate(-8deg);
+}
+
+.title:hover > .word > .letter:nth-child(5) {
+  transform: translate(0%, 400%) rotate(8deg);
+}
+
+.title:hover > .word > .letter:nth-child(6) {
+  transform: translate(40%, -320%) rotate(8deg);
+}
+
+.title:hover > .word > .letter:nth-child(7) {
+  transform: translate(50%, -60%) rotate(8deg);
+}
+
+.title:hover > .word > .letter:nth-child(8) {
+  transform: translate(40%, -200%) rotate(-8deg);
+}
+
+.title:hover > .word > .letter:nth-child(9) {
+  transform: translate(80%, -150%) rotate(8deg);
+}
+
+.title:hover > .word > .letter:nth-child(10) {
+  transform: translate(180%, 80%) rotate(8deg);
+}
