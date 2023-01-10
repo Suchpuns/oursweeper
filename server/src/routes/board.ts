@@ -161,7 +161,6 @@ export function unCoverFirstTile(board: Cell[][], x: number, y: number): Cell[][
       }
     }
   }
-  console.log(mineNum);
   // Add the bombs back but elsewhere
   while (mineNum > 0) {
     let row = Math.round(Math.random() * 1000) % board.length;
@@ -203,7 +202,7 @@ function removeBomb(board: Cell[][], x: number, y: number): Cell[][] {
   board[x][y].value = 0;
   for (let i = x - 1; i <= x + 1; i++) {
     for (let j = y - 1; j <= y + 1; j++) {
-      if (i >= 0 && i < board.length && j >= 0 && j < board[0].length && board[i][j].value !== -1) {
+      if (!(i === x && j === y) && i >= 0 && i < board.length && j >= 0 && j < board[0].length && board[i][j].value !== -1) {
         board[i][j].value -= 1;
       }
       if (i >= 0 && i < board.length && j >= 0 && j < board[0].length && board[i][j].value === -1) {
