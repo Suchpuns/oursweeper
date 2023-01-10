@@ -28,24 +28,28 @@ const GameVersus = ({ difficulty, revealTile, boards }: GameAttributes) => {
             viewOnly={false}
           />
         </div>
-        <div className="otherBoards">
-          {Object.keys(boards).map((username, index) => {
-            if (username !== roomInfo.username) {
-              return (
-                <div className="otherBoard">
-                  <h4>{username}</h4>
-                  <Board
-                    key={index}
-                    difficulty={difficulty}
-                    revealTile={revealTile}
-                    viewOnly={true}
-                    board={boards[username]}
-                  />
-                </div>
-              );
-            }
-          })}
-        </div>
+        {Object.keys(boards).length > 1 ? (
+          <div className="otherBoards">
+            {Object.keys(boards).map((username, index) => {
+              if (username !== roomInfo.username) {
+                return (
+                  <div className="otherBoard">
+                    <h4>{username}</h4>
+                    <Board
+                      key={index}
+                      difficulty={difficulty}
+                      revealTile={revealTile}
+                      viewOnly={true}
+                      board={boards[username]}
+                    />
+                  </div>
+                );
+              }
+            })}
+          </div>
+        ) : (
+          <></>
+        )}
       </div>
     </div>
   );
