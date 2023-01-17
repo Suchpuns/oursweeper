@@ -27,7 +27,7 @@ const registerRoomHandlers = (io: Server<DefaultEventsMap, DefaultEventsMap, Def
     rooms[roomName] = {};
     rooms[roomName][socket.username] = createBoard(1);
     console.log("creating room")
-    socket.emit("boards", JSON.stringify(rooms[roomName]));
+    io.to(roomName).emit("boards", JSON.stringify(rooms[roomName]), socket.username);
   }
 
   const joinRoom = (roomName: string) => {
@@ -57,14 +57,14 @@ const registerRoomHandlers = (io: Server<DefaultEventsMap, DefaultEventsMap, Def
       console.log(`${socket.username} has reconnected`);
       socket.join(roomName);
       socket.emit("game-reconnect");
-      socket.emit("boards", JSON.stringify(rooms[roomName]));
+      io.to(socket.roomName).emit("boards", JSON.stringify(rooms[roomName]), socket.username);
       return;
     }
     console.log("joining room")
     rooms[roomName][socket.username] = createBoard(1);
     socket.join(roomName);
     socket.roomName = roomName;
-    socket.emit("boards", JSON.stringify(rooms[roomName]));
+    io.to(roomName).emit("boards", JSON.stringify(rooms[roomName]), socket.username);
   }
 
   const disconnect = () => {

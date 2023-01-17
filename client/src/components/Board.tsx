@@ -3,8 +3,15 @@ import BoardRow from './BoardRow';
 import { boardState } from '../recoil_state';
 import { useRecoilValue } from 'recoil';
 
-const Board = ({ difficulty, revealTile }: BoardAttributes) => {
-  let board = useRecoilValue(boardState);
+const Board = ({
+  difficulty,
+  revealTile,
+  board,
+  viewOnly,
+}: BoardAttributes) => {
+  if (board === undefined) {
+    board = useRecoilValue(boardState);
+  }
   // let size = difficulty === 0 ? 8 : difficulty === 1 ? 14 : 20;
   // let board: CellAttributes[][] = new Array(size)
   //   .fill({ hidden: true, value: 0 })
@@ -26,7 +33,15 @@ const Board = ({ difficulty, revealTile }: BoardAttributes) => {
   return (
     <>
       {board.map((row: CellAttributes[], idx: number) => {
-        return <BoardRow key={idx} x={idx} row={row} revealTile={revealTile} />;
+        return (
+          <BoardRow
+            key={idx}
+            x={idx}
+            row={row}
+            revealTile={revealTile}
+            viewOnly={viewOnly}
+          />
+        );
       })}
     </>
   );

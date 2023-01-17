@@ -6,6 +6,8 @@ export type CellAttributes = {
 };
 
 export type BoardAttributes = {
+  viewOnly: boolean;
+  board?: CellAttributes[][];
   difficulty: number;
   revealTile: (x: number, y: number) => void;
 };
