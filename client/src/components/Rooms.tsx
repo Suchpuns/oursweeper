@@ -128,6 +128,7 @@ const Rooms = () => {
       newBoard = unCoverTile(newBoard, x, y);
     }
     setBoard(newBoard);
+    console.log(newBoard);
     socket.emit('game:pushBoard', roomInfo.roomName, newBoard);
   };
 

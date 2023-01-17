@@ -1,11 +1,7 @@
-import { CellAttributes, CellState } from './Helpers';
-import { Stack } from '@mui/material';
+import { CellState } from './Helpers';
 import { styled } from '@mui/material/styles';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
-import { useState, useEffect } from 'react';
-import { boardState, clearFlagsState } from '../recoil_state';
-import { useRecoilValue, useRecoilState } from 'recoil';
 import React from 'react';
 
 type Props = {
@@ -15,98 +11,137 @@ type Props = {
   value: number;
   revealTile: (x: number, y: number) => void;
   viewOnly: boolean;
+  clearFlags: number;
 };
 
-const Cell = ({ x, y, hidden, value, revealTile, viewOnly }: Props) => {
-  const [clearFlags, setClearFlags] = useRecoilState(clearFlagsState);
-  const Item = styled(Paper)(({ theme }) => ({
-    backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
-    ...theme.typography.body2,
-    padding: theme.spacing(1),
-    textAlign: 'center',
-    color: theme.palette.text.secondary,
-    height: viewOnly === false ? '1.8rem' : '1rem',
-    width: viewOnly === false ? '1.8rem' : '1rem',
-    borderRadius: '0',
-    fontSize: viewOnly === false ? '1.3rem' : '0.8rem',
-  }));
+type States = {
+  cell: CellState | number;
+  Item: any;
+};
 
-  const [cell, setCell] = useState<CellState | number>(CellState.HIDDEN);
-  const [isHidden, setIsHidden] = useState<boolean>(hidden);
-
-  useEffect(() => {
-    if (hidden === false) {
-      if (value === -1) {
-        setCell(CellState.MINE);
-      } else {
-        setCell(value);
-      }
-    } else if (cell !== CellState.FLAGGED) {
-      setCell(CellState.HIDDEN);
-    }
-  }, [value, hidden]);
-
-  useEffect(() => {
-    if (hidden === true && cell === CellState.FLAGGED) {
-      setCell(CellState.HIDDEN);
-    }
-  }, [clearFlags]);
-
-  const handleLeftClick = () => {
-    if (cell !== CellState.FLAGGED) {
-      // Update the cell
-      hidden = false;
-      if (value === -1) {
-        setCell(CellState.MINE);
-      } else {
-        setCell(value);
-      }
-      revealTile(x, y);
-    }
-  };
-
-  const handleRightClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    if (cell === CellState.FLAGGED) {
-      setCell(CellState.HIDDEN);
-      setIsHidden(!isHidden);
-    } else if (hidden) setCell(CellState.FLAGGED);
-  };
-
-  if (viewOnly === false) {
-    return (
-      <Button
-        variant="text"
-        onClick={handleLeftClick}
-        onContextMenu={(e) => {
-          handleRightClick(e);
-        }}
-        sx={{
-          padding: '0',
-          minWidth: '0',
-          border: '1px black solid',
-          borderRadius: 0,
-        }}
-      >
-        <Item>{cell}</Item>
-      </Button>
-    );
-  } else {
-    return (
-      <Button
-        variant="text"
-        disabled
-        sx={{
-          padding: '0',
-          minWidth: '0',
-          border: '1px black solid',
-          borderRadius: 0,
-        }}
-      >
-        <Item>{cell}</Item>
-      </Button>
-    );
+class Cell extends React.Component<Props, States> {
+  constructor(props: Props) {
+    super(props);
+    this.handleLeftClick.bind(this);
+    this.handleRightClick.bind(this);
+    this.state = {
+      cell: CellState.HIDDEN,
+      Item: styled(Paper)(({ theme }) => ({
+        backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+        ...theme.typography.body2,
+        padding: theme.spacing(1),
+        textAlign: 'center',
+        color: theme.palette.text.secondary,
+        height: this.props.viewOnly === false ? '1.8rem' : '1rem',
+        width: this.props.viewOnly === false ? '1.8rem' : '1rem',
+        borderRadius: '0',
+        fontSize: this.props.viewOnly === false ? '1.3rem' : '0.8rem',
+      })),
+    };
   }
-};
+
+  componentDidMount() {
+    if (this.props.hidden === false) {
+      if (this.props.value === -1) {
+        this.setState({ cell: CellState.MINE });
+      } else {
+        this.setState({ cell: this.props.value });
+      }
+    } else if (this.state.cell !== CellState.FLAGGED) {
+      this.setState({ cell: CellState.HIDDEN });
+    }
+  }
+
+  shouldComponentUpdate(nextProps: Props, nextStates: States) {
+    if (
+      nextProps.hidden !== this.props.hidden ||
+      nextProps.value !== this.props.value ||
+      nextProps.clearFlags !== this.props.clearFlags ||
+      nextStates.cell !== this.state.cell
+    ) {
+      return true;
+    }
+    return false;
+  }
+
+  componentDidUpdate(prevProps: Props, prevState: States) {
+    if (prevProps.clearFlags !== this.props.clearFlags) {
+      if (this.props.hidden === true && this.state.cell === CellState.FLAGGED) {
+        this.setState({ cell: CellState.HIDDEN });
+      }
+    }
+    if (
+      prevProps.value !== this.props.value ||
+      prevProps.hidden !== this.props.hidden
+    ) {
+      console.log('diff');
+      console.log('hidden: ' + this.props.hidden);
+      if (this.props.hidden === false) {
+        if (this.props.value === -1) {
+          this.setState({ cell: CellState.MINE });
+          console.log('bruh?');
+        } else {
+          this.setState({ cell: this.props.value });
+          console.log('bruh2?');
+        }
+      } else if (this.state.cell !== CellState.FLAGGED) {
+        this.setState({ cell: CellState.HIDDEN });
+      }
+    }
+  }
+  handleLeftClick() {
+    console.log('hewy');
+    if (this.state.cell !== CellState.FLAGGED) {
+      // Update the cell
+      this.props.revealTile(this.props.x, this.props.y);
+    }
+  }
+
+  handleRightClick(e: React.MouseEvent) {
+    e.preventDefault();
+    if (this.state.cell === CellState.FLAGGED) {
+      this.setState({ cell: CellState.HIDDEN });
+    } else if (this.props.hidden) this.setState({ cell: CellState.FLAGGED });
+  }
+
+  render() {
+    if (this.props.viewOnly === false) {
+      return (
+        <Button
+          variant="text"
+          onClick={() => {
+            this.handleLeftClick();
+          }}
+          onContextMenu={(e) => {
+            this.handleRightClick(e);
+          }}
+          sx={{
+            padding: '0',
+            minWidth: '0',
+            border: '1px black solid',
+            borderRadius: 0,
+          }}
+        >
+          <this.state.Item>{this.state.cell}</this.state.Item>
+        </Button>
+      );
+    } else {
+      return (
+        <Button
+          variant="text"
+          disabled
+          sx={{
+            padding: '0',
+            minWidth: '0',
+            border: '1px black solid',
+            borderRadius: 0,
+          }}
+        >
+          <this.state.Item>{this.state.cell}</this.state.Item>
+        </Button>
+      );
+    }
+  }
+}
 
 export default Cell;

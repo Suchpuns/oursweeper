@@ -1,5 +1,7 @@
 import Cell from './Cell';
 import { CellAttributes } from './Helpers';
+import { useRecoilValue, useRecoilState } from 'recoil';
+import { boardState, clearFlagsState } from '../recoil_state';
 
 type Props = {
   x: number;
@@ -9,6 +11,7 @@ type Props = {
 };
 
 const BoardRow = ({ x, row, revealTile, viewOnly }: Props) => {
+  const [clearFlags, setClearFlags] = useRecoilState(clearFlagsState);
   return (
     <div style={{ display: 'flex' }}>
       {row.map((cell: CellAttributes, idx: number) => {
@@ -21,6 +24,7 @@ const BoardRow = ({ x, row, revealTile, viewOnly }: Props) => {
             value={cell.value}
             revealTile={revealTile}
             viewOnly={viewOnly}
+            clearFlags={clearFlags}
           />
         );
       })}
