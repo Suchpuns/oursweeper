@@ -3,7 +3,7 @@
 // Broadcasts the board to given room everytime it changes.
 import { DefaultEventsMap } from "socket.io/dist/typed-events"
 import { Server, Socket } from "socket.io";
-import { Room, ISocket } from "../interfaces";
+import { Room, ISocket, Cell } from "../interfaces";
 import { rooms } from "./roomHandler";
 import { isValidCoords, isWin, unCoverTile, unCoverFirstTile, createBoard } from "../routes/board";
 
@@ -56,11 +56,34 @@ const registerGameHandlers = (io: Server<DefaultEventsMap, DefaultEventsMap, Def
       return;
     }
     console.log(rooms[roomName]);
-    io.to(roomName).emit("boards", rooms[roomName], socket.username);
+    io.to(roomName).emit("boards", JSON.stringify(rooms[roomName]), socket.username);
   }
 
+  const pushBoard = (roomName: string, board: Cell[][]) => {
+    if (rooms[roomName] === undefined) {
+      console.log("room does not exist");
+      socket.emit("error", "given room does not exist");
+      return;
+    }
+    if (socket.username === undefined) {
+      console.log("Username not given");
+      socket.emit("error", "Username not given");
+      return;
+    }
+    rooms[roomName][socket.username] = board;
+    // Check for win
+    if (isWin(rooms[roomName][socket.username]) === true) {
+      console.log(`${socket.username} has won!`);
+      socket.emit("game", "win");
+      socket.broadcast.to(roomName).emit("game", "lost");
+      return;
+    }
+    socket.broadcast.to(roomName).emit("boards", JSON.stringify(rooms[roomName]), socket.username);
+    return;
+  }
   socket.on("game:revealTile", revealTile);
   socket.on("game:getBoard", getBoard);
+  socket.on("game:pushBoard", pushBoard);
 }
 
 export { registerGameHandlers as default }

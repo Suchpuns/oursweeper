@@ -13,6 +13,7 @@ import {
   clearFlagsState,
 } from '../recoil_state';
 import { useRecoilState } from 'recoil';
+import { isValidCoords, unCoverFirstTile, unCoverTile } from './BoardHelpers';
 
 const socket = io(import.meta.env.VITE_BE_URL, { autoConnect: false });
 
@@ -114,6 +115,22 @@ const Rooms = () => {
     }
   };
 
+  const revealTileLocal = (x: number, y: number) => {
+    if (board[x][y].value === -1) {
+      setFirstMove(true);
+      setClearFlags((clearFlags + 1) % 2);
+    }
+    let newBoard = JSON.parse(JSON.stringify(board));
+    if (firstMove) {
+      newBoard = unCoverFirstTile(newBoard, x, y);
+      setFirstMove(false);
+    } else {
+      newBoard = unCoverTile(newBoard, x, y);
+    }
+    setBoard(newBoard);
+    socket.emit('game:pushBoard', roomInfo.roomName, newBoard);
+  };
+
   const handleRoomNameField = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRoomInfo({ ...roomInfo, roomName: event.target.value });
   };
@@ -170,7 +187,11 @@ const Rooms = () => {
           )}
         </>
       ) : (
-        <GameVersus difficulty={0} revealTile={revealTile} boards={boards} />
+        <GameVersus
+          difficulty={0}
+          revealTile={revealTileLocal}
+          boards={boards}
+        />
       )}
     </div>
   );
