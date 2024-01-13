@@ -2,6 +2,7 @@ import React, { useEffect, useState, createContext } from 'react';
 import { TextField, Button, imageListItemBarClasses } from '@mui/material';
 import './css/Rooms.css';
 import Board from './Board';
+import GameVersus from './GameVersus';
 import TitleText from './TitleText';
 import io from 'socket.io-client';
 import { BoardAttributes, CellAttributes } from './Helpers';
@@ -12,6 +13,7 @@ import {
   clearFlagsState,
 } from '../recoil_state';
 import { useRecoilState } from 'recoil';
+import { isValidCoords, unCoverFirstTile, unCoverTile } from './BoardHelpers';
 
 const socket = io(import.meta.env.VITE_BE_URL, { autoConnect: false });
 
@@ -22,6 +24,7 @@ const Rooms = () => {
   const [firstMove, setFirstMove] = useState<boolean>(true);
   const [clearFlags, setClearFlags] = useRecoilState(clearFlagsState);
   const [board, setBoard] = useRecoilState(boardState);
+  const [boards, setBoards] = useState<Record<string, CellAttributes[][]>>({});
 
   useEffect(() => {
     socket.on('connect', () => {
@@ -43,10 +46,14 @@ const Rooms = () => {
       console.log('ERROR: ' + message);
     });
 
-    socket.on('boards', (boards) => {
+    socket.on('boards', (boards, sender) => {
       boards = JSON.parse(boards);
       console.log(boards[roomInfo.username]);
-      setBoard(boards[roomInfo.username]);
+      console.log(sender);
+      if (sender === roomInfo.username) {
+        setBoard(boards[roomInfo.username]);
+      }
+      setBoards(boards);
     });
 
     socket.on('game', (condition) => {
@@ -108,6 +115,23 @@ const Rooms = () => {
     }
   };
 
+  const revealTileLocal = (x: number, y: number) => {
+    if (board[x][y].value === -1) {
+      setFirstMove(true);
+      setClearFlags((clearFlags + 1) % 2);
+    }
+    let newBoard = JSON.parse(JSON.stringify(board));
+    if (firstMove) {
+      newBoard = unCoverFirstTile(newBoard, x, y);
+      setFirstMove(false);
+    } else {
+      newBoard = unCoverTile(newBoard, x, y);
+    }
+    setBoard(newBoard);
+    console.log(newBoard);
+    socket.emit('game:pushBoard', roomInfo.roomName, newBoard);
+  };
+
   const handleRoomNameField = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRoomInfo({ ...roomInfo, roomName: event.target.value });
   };
@@ -164,7 +188,11 @@ const Rooms = () => {
           )}
         </>
       ) : (
-        <Board difficulty={0} revealTile={revealTile} />
+        <GameVersus
+          difficulty={0}
+          revealTile={revealTileLocal}
+          boards={boards}
+        />
       )}
     </div>
   );
